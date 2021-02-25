@@ -1,5 +1,3 @@
-import shuffle from "./shuffle.js";
-
 // Pages
 const gamePage = document.getElementById("game-page");
 const scorePage = document.getElementById("score-page");
@@ -23,6 +21,7 @@ const playAgainBtn = document.querySelector(".play-again");
 // Equations
 let questionAmount = 0;
 let equationsArray = [];
+let playerGuessArray = [];
 
 // Game Page
 let firstNumber = 0;
@@ -31,8 +30,105 @@ let equationObject = {};
 const wrongFormat = [];
 
 // Time
+let timer;
+let timePlayed;
+let baseTime = 0;
+let penaltyTime = 0;
+let finalTime = 0;
+let finalTimeDisplay = "0.0s";
 
 // Scroll
+let valueY = 0;
+
+// Reset game
+const playAgain = () => {
+  gamePage.addEventListener("click", startTimer);
+  scorePage.hidden = true;
+  splashPage.hidden = false;
+  equationsArray = [];
+  playerGuessArray = [];
+  valueY = 0;
+  playAgainBtn.hidden = true;
+};
+
+// Show scores page
+const showScorePage = () => {
+  // Show play again button after 1 second
+  setTimeout(() => {
+    playAgainBtn.hidden = false;
+  }, 1000);
+  gamePage.hidden = true;
+  scorePage.hidden = false;
+};
+
+// Format and display time in DOM
+const scoresToDOM = () => {
+  finalTimeDisplay = finalTime.toFixed(1);
+  baseTime = timePlayed.toFixed(1);
+  penaltyTime = penaltyTime.toFixed(1);
+  // Append
+  baseTimeEl.textContent = `Base Time: ${baseTime}s`;
+  penaltyTimeEl.textContent = `Penalty: +${penaltyTime}s`;
+  finalTimeEl.textContent = `${finalTimeDisplay}s`;
+  //   Scroll to Top, go to score page
+  itemContainer.scrollTo({ top: 0, behavior: "instant" });
+  showScorePage();
+};
+
+// Add a tenth of a second to timePlayed
+const addTime = () => {
+  timePlayed += 0.1;
+  checkTime();
+};
+
+// Stop Timer, process results, go to score page
+const checkTime = () => {
+  console.log(timePlayed);
+  if (playerGuessArray.length == questionAmount) {
+    console.log(playerGuessArray);
+    clearInterval(timer);
+    // Check for wrong guesses, add penalty time
+    equationsArray.forEach((equation, index) => {
+      if (equation.evaluated === playerGuessArray[index]) {
+        // Corret guess, no penalty
+      } else {
+        // Incorrect guess, add penalty
+        penaltyTime += 0.5;
+      }
+    });
+    finalTime = timePlayed + penaltyTime;
+    console.log(
+      "time: ",
+      timePlayed,
+      "penalty: ",
+      penaltyTime,
+      "final: ",
+      finalTime
+    );
+    scoresToDOM();
+  }
+};
+
+// Start timer when game page is clicked
+const startTimer = () => {
+  // Reset times
+  timePlayed = 0;
+  penaltyTime = 0;
+  finalTime = 0;
+  timer = setInterval(addTime, 100);
+  gamePage.removeEventListener("click", startTimer);
+};
+
+// Scorll, Store user selection in playerGuessArray
+const select = (guessedTrue) => {
+  // Scroll 80 pixel
+  valueY += 80;
+  itemContainer.scroll(0, valueY);
+  // Add player guess to array
+  return guessedTrue
+    ? playerGuessArray.push("true")
+    : playerGuessArray.push("false");
+};
 
 // Display game page
 const showGamePage = () => {
@@ -103,7 +199,6 @@ const populateGamePage = () => {
   selectedItem.classList.add("selected-item");
   // Append
   itemContainer.append(topSpacer, selectedItem);
-
   // Create Equations, Build Elements in DOM
   createEquations();
   equationsToDOM();
@@ -170,3 +265,4 @@ startForm.addEventListener("click", () => {
 
 // Event Listeners
 startForm.addEventListener("submit", selectQuestionAmount);
+gamePage.addEventListener("click", startTimer);
