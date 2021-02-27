@@ -128,9 +128,7 @@ const addTime = () => {
 
 // Stop Timer, process results, go to score page
 const checkTime = () => {
-  console.log(timePlayed);
   if (playerGuessArray.length == questionAmount) {
-    console.log(playerGuessArray);
     clearInterval(timer);
     // Check for wrong guesses, add penalty time
     equationsArray.forEach((equation, index) => {
@@ -142,14 +140,6 @@ const checkTime = () => {
       }
     });
     finalTime = timePlayed + penaltyTime;
-    console.log(
-      "time: ",
-      timePlayed,
-      "penalty: ",
-      penaltyTime,
-      "final: ",
-      finalTime
-    );
     scoresToDOM();
   }
 };
@@ -268,17 +258,6 @@ const countdownStart = () => {
       countdown.textContent = count;
     }
   }, 1000);
-
-  //   countdown.textContent = "3";
-  //   setTimeout(() => {
-  //     countdown.textContent = "2";
-  //   }, 1000);
-  //   setTimeout(() => {
-  //     countdown.textContent = "1";
-  //   }, 2000);
-  //   setTimeout(() => {
-  //     countdown.textContent = "GO!";
-  //   }, 3000);
 };
 
 // Navigate from Spalsh to Countdown Page
@@ -287,7 +266,6 @@ const showCountdown = () => {
   splashPage.hidden = true;
   populateGamePage();
   countdownStart();
-  //setTimeout(showGamePage, 4000);
 };
 
 // Get the value from selected radio button
@@ -305,7 +283,6 @@ const getRadioValue = () => {
 const selectQuestionAmount = (e) => {
   e.preventDefault();
   questionAmount = getRadioValue();
-  console.log("question amount ->", questionAmount);
   if (questionAmount) {
     showCountdown();
   }
